@@ -26,10 +26,9 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "Ensure can submit entry to challenge",
+  name: "Ensure creator cannot submit to own challenge",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     const wallet_1 = accounts.get("wallet_1")!;
-    const wallet_2 = accounts.get("wallet_2")!;
     
     let block = chain.mineBlock([
       Tx.contractCall("brightwave-core", "create-challenge",
@@ -38,11 +37,13 @@ Clarinet.test({
       ),
       Tx.contractCall("brightwave-core", "submit-entry",
         [types.uint(0), types.utf8("My futuristic story submission")],
-        wallet_2.address
+        wallet_1.address
       )
     ]);
     
     assertEquals(block.receipts.length, 2);
-    assertEquals(block.receipts[1].result, '(ok true)');
+    assertEquals(block.receipts[1].result, '(err u106)');
   },
 });
+
+// [Previous tests remain unchanged...]
